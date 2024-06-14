@@ -5,19 +5,21 @@ import java.util.*;
 
 public class GenerateAst {
     public static void main(String[] args) throws IOException {
-        if (args.length != 1) {
-            System.out.println("Usage: generate_ast <output directory>");
-            System.out.println(args.length);
-            System.exit(64);
-        }
+//        if (args.length != 1) {
+//            System.out.println("Usage: generate_ast <output directory>");
+//            System.out.println(args.length);
+//            System.exit(64);
+//        }
 
-        String outputDir = args[0];
+//        String outputDir = args[0];
+        String outputDir = "C:\\Java Projects\\interpter_book\\jlox\\src\\tool";
         // this is the only code that will be needed to change to generate a new AST
         defineAst(outputDir, "Expr", Arrays.asList(
                 "Binary   : Expr left, lox.Token operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
-                "Unary    : lox.Token operator, Expr right"
+                "Unary    : lox.Token operator, Expr right",
+                "Conditional  : Expr expr, Expr thenBranch, Expr elseBranch"
         ));
     }
 
@@ -25,9 +27,12 @@ public class GenerateAst {
         String path = outputDir + "/" + baseName + ".java";
         PrintWriter writer = new PrintWriter(path, "UTF-8");
 
+        writer.println("package tool;");
+        writer.println();
+
         writer.println("import java.util.List;");
         writer.println();
-        writer.println("abstract class " + baseName + " {");
+        writer.println("public abstract class " + baseName + " {");
 
         defineVisitor(writer, baseName, types);
 
@@ -41,18 +46,18 @@ public class GenerateAst {
 
         // the base accept() method
         writer.println();
-        writer.println("  abstract <R> R accept(Visitor<R> visitor);");
+        writer.println("  public abstract <R> R accept(Visitor<R> visitor);");
 
         writer.println("}");
         writer.close();
     }
 
     private static void defineVisitor(PrintWriter writer, String baseName, List<String> types) {
-        writer.println("  interface Visitor<R> {");
+        writer.println("  public interface Visitor<R> {");
 
         for (String type : types) {
             String typeName = type.split(":")[0].trim();
-            writer.println("    R visit" + typeName + baseName + "(" +
+            writer.println("    public R visit" + typeName + baseName + "(" +
                     typeName + " " + baseName.toLowerCase() + ");");
         }
 
@@ -60,10 +65,10 @@ public class GenerateAst {
     }
 
     private static void defineType(PrintWriter writer, String baseName, String className, String fieldList) {
-        writer.println(" static class " + className + " extends " + baseName + " {");
+        writer.println(" public static class " + className + " extends " + baseName + " {");
 
         // constructor
-        writer.println("    " + className + "(" + fieldList + ") {");
+        writer.println("    public " + className + "(" + fieldList + ") {");
 
         // store parameters in fields
         String[] fields = fieldList.split(", ");
@@ -77,7 +82,7 @@ public class GenerateAst {
         // Visitor pattern.
         writer.println();
         writer.println("    @Override");
-        writer.println("    <R> R accept(Visitor<R> visitor) {");
+        writer.println("    public <R> R accept(Visitor<R> visitor) {");
         writer.println("      return visitor.visit" +
                 className + baseName + "(this);");
         writer.println("    }");
@@ -85,7 +90,7 @@ public class GenerateAst {
         // fields
         writer.println();
         for (String field : fields) {
-            writer.println("    final " + field + ";");
+            writer.println("    public final " + field + ";");
         }
 
         writer.println("  }");
