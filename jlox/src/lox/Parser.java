@@ -25,16 +25,30 @@ public class Parser {
     }
 
     private Expr expression() {
-        return comma();
+        return conditional();
     }
 
     private Expr comma() {
-        Expr expr = equality();
+        Expr expr = conditional();
 
         if (match(COMMA)) {
             Token comma = previous();
             Expr right = comma();
             expr = new Expr.Binary(expr, comma, right);
+        }
+
+        return expr;
+    }
+
+    private Expr conditional() {
+        Expr expr = equality();
+
+        if (match(QUESTION)) {
+            Expr thenBranch = expression();
+            consume(COLON, "Expected ':' after then branch of conditional expression");
+            Expr elseBranch = conditional();
+
+            expr = new Expr.Conditional(expr, thenBranch, elseBranch);
         }
 
         return expr;
@@ -116,6 +130,30 @@ public class Parser {
             Expr expr = expression();
             consume(RIGHT_PAREN, "Expect ')' after expression");
             return new Expr.Grouping(expr);
+        }
+
+        if (match(BANG_EQUAL, EQUAL_EQUAL)) {
+            error(previous(), "Missing left-hand operand.");
+            equality();
+            return null;
+        }
+
+        if (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+            error(previous(), "Missing left-hand operand.");
+            comparison();
+            return null;
+        }
+
+        if (match(PLUS)) {
+            error(previous(), "Missing left-hand operand.");
+            term();
+            return null;
+        }
+
+        if (match(SLASH, STAR)) {
+            error(previous(), "Missing left-hand operand.");
+            factor();
+            return null;
         }
 
         throw error(peek(), "Expected expression");
