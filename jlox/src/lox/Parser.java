@@ -25,7 +25,7 @@ public class Parser {
     }
 
     private Expr expression() {
-        return conditional();
+        return comma();
     }
 
     private Expr comma() {
