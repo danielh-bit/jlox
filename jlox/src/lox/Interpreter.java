@@ -3,6 +3,15 @@ package lox;
 import tool.*;
 
 public class Interpreter implements Expr.Visitor<Object> {
+    void interpret(Expr expression) {
+        try {
+            Object value = evaluate(expression);
+            System.out.println(stringify(value));
+        } catch (RuntimeError error) {
+            Lox.runtimeError(error);
+        }
+    }
+
     private Object evaluate(Expr expr) {
         return expr.accept(this);
     }
@@ -40,15 +49,27 @@ public class Interpreter implements Expr.Visitor<Object> {
 
                 if (left instanceof String && right instanceof String) {
                     return (String)left + (String)right;
+                } else if (left instanceof String && right instanceof Double) {
+                    return (String)left + stringify(right);
+                } else if (left instanceof Double && right instanceof String) {
+                    return stringify(left) + (String)right;
                 }
 
                 throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings");
             case SLASH:
                 checkNumberOperands(expr.operator, left, right);
+                if ((double)right == 0) {
+                    throw new RuntimeError(expr.operator, "Cannot divide by 0");
+                }
                 return (double)left / (double)right;
             case STAR:
                 checkNumberOperands(expr.operator, left, right);
                 return (double)left * (double)right;
+
+            case COMMA: // this is the special case for the c-style comma
+                // the c-way only allows this weird behaviour for numbers
+                checkNumberOperands(expr.operator, left, right);
+                return (double)right;
         }
 
         // unreachable
@@ -83,7 +104,16 @@ public class Interpreter implements Expr.Visitor<Object> {
 
     @Override
     public Object visitConditionalExpr(Expr.Conditional expr) {
-        return null;
+        Object branch = evaluate(expr.expr);
+
+        // this is implemented accounting for truthy values. for consistency!
+        if (isTruthy(branch)) {
+            return evaluate(expr.thenBranch);
+        } else {
+            return evaluate(expr.elseBranch);
+        }
+
+        // unreachable if not error (need to add error correction)
     }
 
 
@@ -117,5 +147,20 @@ public class Interpreter implements Expr.Visitor<Object> {
             return false;
 
         return a.equals(b);
+    }
+
+    private String stringify(Object object) {
+        if (object == null)
+            return "nil";
+
+        if (object instanceof Double) {
+            String text = object.toString();
+            if (text.endsWith(".0")) {
+                text = text.substring(0, text.length() - 2);
+            }
+            return text;
+        }
+
+        return object.toString();
     }
 }
