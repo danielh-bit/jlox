@@ -2,11 +2,16 @@ package lox;
 
 import tool.*;
 
-public class Interpreter implements Expr.Visitor<Object> {
-    void interpret(Expr expression) {
+import java.util.*;
+
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    private Environment environment = new Environment();
+
+    void interpret(List<Stmt>statements) {
         try {
-            Object value = evaluate(expression);
-            System.out.println(stringify(value));
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
         } catch (RuntimeError error) {
             Lox.runtimeError(error);
         }
@@ -14,6 +19,10 @@ public class Interpreter implements Expr.Visitor<Object> {
 
     private Object evaluate(Expr expr) {
         return expr.accept(this);
+    }
+
+    private void execute(Stmt stmt) {
+        stmt.accept(this);
     }
 
 
@@ -116,6 +125,11 @@ public class Interpreter implements Expr.Visitor<Object> {
         // unreachable if not error (need to add error correction)
     }
 
+    @Override
+    public Object visitVariableExpr(Expr.Variable expr) {
+        return environment.get(expr.name);
+    }
+
 
     private void checkNumberOperand(Token operator, Object operand) {
         if (operand instanceof Double)
@@ -153,6 +167,7 @@ public class Interpreter implements Expr.Visitor<Object> {
         if (object == null)
             return "nil";
 
+        // remove ".0" from double
         if (object instanceof Double) {
             String text = object.toString();
             if (text.endsWith(".0")) {
@@ -161,6 +176,35 @@ public class Interpreter implements Expr.Visitor<Object> {
             return text;
         }
 
+        // add '"' if string
+        if (object instanceof String) {
+            String text = object.toString();
+            return '"' + text + '"';
+        }
+
         return object.toString();
+    }
+
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt) {
+        evaluate(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt) {
+        Object value = evaluate(stmt.expression);
+        System.out.println(stringify(value));
+        return null;
+    }
+
+    @Override
+    public Void visitVarStmt(Stmt.Var stmt) {
+        Object value = null;
+        if (stmt.initializer != null)
+            value = evaluate(stmt.initializer);
+
+        environment.define(stmt.name.lexeme, value);
+        return null;
     }
 }

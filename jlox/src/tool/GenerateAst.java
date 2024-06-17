@@ -15,11 +15,19 @@ public class GenerateAst {
         String outputDir = "C:\\Java Projects\\interpter_book\\jlox\\src\\tool";
         // this is the only code that will be needed to change to generate a new AST
         defineAst(outputDir, "Expr", Arrays.asList(
+                "Assign   : Token name, Expr value",
                 "Binary   : Expr left, lox.Token operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
                 "Unary    : lox.Token operator, Expr right",
-                "Conditional  : Expr expr, Expr thenBranch, Expr elseBranch"
+                "Conditional  : Expr expr, Expr thenBranch, Expr elseBranch",
+                "Variable : Token name"
+        ));
+
+        defineAst(outputDir, "Stmt", Arrays.asList(
+                "Expression : Expr expression",
+                "Print      : Expr expression",
+                "Var        : Token name, Expr initializer"
         ));
     }
 
