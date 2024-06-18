@@ -6,10 +6,26 @@ import java.util.*;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private Environment environment = new Environment();
+    private static Object uninitialized = new Object();
 
-    void interpret(List<Stmt>statements) {
+    void interpret(List<Stmt> statements) {
         try {
             for (Stmt statement : statements) {
+                execute(statement);
+            }
+        } catch (RuntimeError error) {
+            Lox.runtimeError(error);
+        }
+    }
+
+    void REPLInterpret(List<Stmt> statements) {
+        try {
+            for (Stmt statement : statements) {
+                if (statement instanceof Stmt.Expression) {
+                    Object result = evaluate(((Stmt.Expression) statement).expression);
+                    System.out.println(stringify(result));
+                    continue;
+                }
                 execute(statement);
             }
         } catch (RuntimeError error) {
@@ -23,6 +39,27 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private void execute(Stmt stmt) {
         stmt.accept(this);
+    }
+
+    void executeBlock(List<Stmt> statements, Environment environment) {
+        // this will recursively set the environments in such a way that the current environment will always be set
+        Environment previous = this.environment;
+
+        try {
+            this.environment = environment;
+
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
+    }
+
+    @Override
+    public Void visitBlockStmt(Stmt.Block stmt) {
+        executeBlock(stmt.statements, new Environment(environment));
+        return null;
     }
 
 
@@ -127,7 +164,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitVariableExpr(Expr.Variable expr) {
-        return environment.get(expr.name);
+        Object value = environment.get(expr.name);
+
+        if (value == uninitialized)
+            throw new RuntimeError(expr.name, "Variable must be initialized before use.");
+        return value;
     }
 
 
@@ -185,6 +226,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return object.toString();
     }
 
+
     @Override
     public Void visitExpressionStmt(Stmt.Expression stmt) {
         evaluate(stmt.expression);
@@ -200,11 +242,19 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {
-        Object value = null;
+        Object value = uninitialized;
         if (stmt.initializer != null)
             value = evaluate(stmt.initializer);
 
         environment.define(stmt.name.lexeme, value);
         return null;
+    }
+
+    @Override
+    public Object visitAssignExpr(Expr.Assign expr) {
+        Object value = evaluate(expr.value);
+        environment.assign(expr.name, value);
+
+        return value;
     }
 }
