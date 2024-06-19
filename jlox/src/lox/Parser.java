@@ -43,6 +43,8 @@ public class Parser {
     }
 
     private Stmt statement() {
+        if (match(IF))
+            return ifStatements();
         if (match(PRINT))
             return printStatement();
         if (match(LEFT_BRACE))
@@ -51,6 +53,18 @@ public class Parser {
         return expressionStatement();
     }
 
+    private Stmt ifStatements() {
+        consume(LEFT_PAREN, "Expect '(' after 'if'.");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expect ')' after if condition.");
+
+        Stmt thenBranch = statement();
+        Stmt elseBranch = null;
+        if (match(ELSE))
+            elseBranch = statement();
+
+        return new Stmt.If(condition, thenBranch, elseBranch);
+    }
 
     private Stmt printStatement() {
         Expr value = expression();

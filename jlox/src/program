@@ -1,3 +1,7 @@
-var a;
-a = 3;
-print a;
+var a = 4;
+
+if (a >= b) {
+    print true;
+} else {
+    print false;
+}
