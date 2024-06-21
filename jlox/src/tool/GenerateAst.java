@@ -19,6 +19,7 @@ public class GenerateAst {
                 "Binary   : Expr left, lox.Token operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
+                "Logical  : Expr left, Token operator, Expr right",
                 "Unary    : lox.Token operator, Expr right",
                 "Conditional  : Expr expr, Expr thenBranch, Expr elseBranch",
                 "Variable : Token name"
@@ -27,10 +28,11 @@ public class GenerateAst {
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Block      : List<Stmt> statements",
                 "Expression : Expr expression",
-                "If         : Expr condition, Stmt thenBranch," +
-                        " Stmt elseBranch",
+                "Break      : ",
+                "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "Print      : Expr expression",
-                "Var        : Token name, Expr initializer"
+                "Var        : Token name, Expr initializer",
+                "While      : Expr condition, Stmt body"
         ));
     }
 
@@ -82,7 +84,13 @@ public class GenerateAst {
         writer.println("    public " + className + "(" + fieldList + ") {");
 
         // store parameters in fields
-        String[] fields = fieldList.split(", ");
+        String[] fields;
+        if (fieldList.isEmpty()) {
+            fields = new String[0];
+        } else {
+            fields = fieldList.split(", ");
+        }
+//        String[] fields = fieldList.split(", ");
         for (String field : fields) {
             String name = field.split(" ")[1];
             writer.println("    this." + name + " = " + name + ";");
