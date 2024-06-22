@@ -6,8 +6,28 @@ import java.util.*;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private static class BreakException extends RuntimeException {}
-    private Environment environment = new Environment();
+    public Environment globals = new Environment();
+    private Environment environment = globals;
     private static Object uninitialized = new Object();
+
+    Interpreter() {
+        globals.define("clock", new LoxCallable() {
+            @Override
+            public Object call(Interpreter interpreter, List<Object> arguments) {
+                return (double) System.currentTimeMillis() / 1000.0;
+            }
+
+            @Override
+            public int arity() {
+                return 0;
+            }
+
+            @Override
+            public String toString() {
+                return "<native function>";
+            }
+        });
+    }
 
     void interpret(List<Stmt> statements) {
         try {

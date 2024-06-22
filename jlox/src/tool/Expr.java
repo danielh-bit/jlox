@@ -1,8 +1,8 @@
 package tool;
 
-import lox.*;
+import lox.Token;
 
-import java.util.*;
+import java.util.List;
 
 public abstract class Expr {
   public interface Visitor<R> {
