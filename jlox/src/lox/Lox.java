@@ -14,7 +14,7 @@ public class Lox {
 
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        runFile("C:\\Java Projects\\interpter_book\\jlox\\src\\program");
+        runFile("C:\\Java Projects\\interpreter_book\\jlox\\src\\program");
         long endTime   = System.currentTimeMillis();
         System.out.println(endTime - startTime);
 //        if(args.length > 1) {
