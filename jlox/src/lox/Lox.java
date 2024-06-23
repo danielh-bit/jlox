@@ -17,9 +17,9 @@ public class Lox {
         // "C:\\Java Projects\\interpreter_book\\jlox\\src\\program"
         runFile("C:\\Users\\Alex\\Desktop\\Daniel\\projects\\java\\jlox\\jlox\\src\\program");
         long endTime   = System.currentTimeMillis();
-        System.out.println(endTime - startTime);
+        System.out.println("TIME: " + (endTime - startTime));
 //        if(args.length > 1) {
-//            System.out.println("Usage: jlox [script]");
+//            System.out.pr intln("Usage: jlox [script]");
 //            System.exit(64);
 //        } else if (args.length == 1) {
 //            runFile(args[0]);

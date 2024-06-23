@@ -1,11 +1,7 @@
-var a = 0;
-var b = 1;
-var fib;
-
-for (var i = 0; i < 6; i = i + 1) {
-    fib = a + b;
-    a = b;
-    b = fib;
+fun a(a) {
+    print a;
+    var a = "SHUT";
+    print a;
 }
 
-print fib;
+a("a");
