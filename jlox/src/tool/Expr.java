@@ -14,6 +14,7 @@ public abstract class Expr {
     public R visitLiteralExpr(Literal expr);
     public R visitLogicalExpr(Logical expr);
     public R visitSetExpr(Set expr);
+    public R visitThisExpr(This expr);
     public R visitUnaryExpr(Unary expr);
     public R visitConditionalExpr(Conditional expr);
     public R visitVariableExpr(Variable expr);
@@ -133,6 +134,18 @@ public abstract class Expr {
     public final Expr object;
     public final Token name;
     public final Expr value;
+  }
+ public static class This extends Expr {
+    public This(Token keyword) {
+    this.keyword = keyword;
+    }
+
+    @Override
+    public <R> R accept(Visitor<R> visitor) {
+      return visitor.visitThisExpr(this);
+    }
+
+    public final Token keyword;
   }
  public static class Unary extends Expr {
     public Unary(lox.Token operator, Expr right) {
