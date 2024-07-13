@@ -9,9 +9,11 @@ public abstract class Expr {
     public R visitAssignExpr(Assign expr);
     public R visitBinaryExpr(Binary expr);
     public R visitCallExpr(Call expr);
+    public R visitGetExpr(Get expr);
     public R visitGroupingExpr(Grouping expr);
     public R visitLiteralExpr(Literal expr);
     public R visitLogicalExpr(Logical expr);
+    public R visitSetExpr(Set expr);
     public R visitUnaryExpr(Unary expr);
     public R visitConditionalExpr(Conditional expr);
     public R visitVariableExpr(Variable expr);
@@ -62,6 +64,20 @@ public abstract class Expr {
     public final Token paren;
     public final List<Expr> arguments;
   }
+ public static class Get extends Expr {
+    public Get(Expr object, Token name) {
+    this.object = object;
+    this.name = name;
+    }
+
+    @Override
+    public <R> R accept(Visitor<R> visitor) {
+      return visitor.visitGetExpr(this);
+    }
+
+    public final Expr object;
+    public final Token name;
+  }
  public static class Grouping extends Expr {
     public Grouping(Expr expression) {
     this.expression = expression;
@@ -101,6 +117,22 @@ public abstract class Expr {
     public final Expr left;
     public final Token operator;
     public final Expr right;
+  }
+ public static class Set extends Expr {
+    public Set(Expr object, Token name, Expr value) {
+    this.object = object;
+    this.name = name;
+    this.value = value;
+    }
+
+    @Override
+    public <R> R accept(Visitor<R> visitor) {
+      return visitor.visitSetExpr(this);
+    }
+
+    public final Expr object;
+    public final Token name;
+    public final Expr value;
   }
  public static class Unary extends Expr {
     public Unary(lox.Token operator, Expr right) {

@@ -1,0 +1,8 @@
+class Box {
+    open() {
+        print "opening the box";
+    }
+}
+
+var box = Box();
+Box().open();
