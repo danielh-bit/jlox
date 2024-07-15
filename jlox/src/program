@@ -1,8 +1,7 @@
-class Box {
-    open() {
-        print "opening the box";
+class Math {
+    square(n) {
+        return n * n;
     }
 }
 
-var box = Box();
-Box().open();
+print Math.square(3);
