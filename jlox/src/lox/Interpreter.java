@@ -194,8 +194,16 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitGetExpr(Expr.Get expr) {
         Object object = evaluate(expr.object);
+
         if (object instanceof LoxInstance) {
             return ((LoxInstance) object).get(expr.name);
+        }
+        if (object instanceof LoxClass) {
+            LoxFunction method = ((LoxClass) object).findMethod(expr.name.lexeme);
+
+            if (method == null)
+                throw new RuntimeError(expr.name, "This method does not exist");
+            return method;
         }
 
         throw new RuntimeError(expr.name, "Only instances have properties.");

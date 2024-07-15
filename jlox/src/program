@@ -4,4 +4,8 @@ class Math {
     }
 }
 
-print Math.square(3);
+print Math.asdf(3);
+
+// make these error different.
+//var a = 3;
+//a.asdf();
