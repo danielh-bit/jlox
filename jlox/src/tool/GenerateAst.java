@@ -12,8 +12,8 @@ public class GenerateAst {
 //        }
 
 //        String outputDir = args[0];
-        String outputDir = "C:\\Users\\Alex\\Desktop\\Daniel\\projects\\java\\jlox\\jlox\\src\\tool";
-//        String outputDir = "C:\\Java Projects\\interpreter_book\\jlox\\src\\tool";
+//        String outputDir = "C:\\Users\\Alex\\Desktop\\Daniel\\projects\\java\\jlox\\jlox\\src\\tool";
+        String outputDir = "C:\\Java Projects\\interpreter_book\\jlox\\src\\tool";
         // this is the only code that will be needed to change to generate a new AST
         defineAst(outputDir, "Expr", Arrays.asList(
                 "Assign   : Token name, Expr value",
@@ -24,6 +24,7 @@ public class GenerateAst {
                 "Literal  : Object value",
                 "Logical  : Expr left, Token operator, Expr right",
                 "Set      : Expr object, Token name, Expr value",
+                "Super    : Token keyword, Token method",
                 "This     : Token keyword",
                 "Unary    : lox.Token operator, Expr right",
                 "Conditional  : Expr expr, Expr thenBranch, Expr elseBranch",
@@ -32,7 +33,7 @@ public class GenerateAst {
 
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Block      : List<Stmt> statements",
-                "Class      : Token name, List<Stmt.Function> methods",
+                "Class      : Token name, Expr.Variable superclass, List<Stmt.Function> methods",
                 "Expression : Expr expression",
                 "Function   : Token name, List<Token> params, List<Stmt> body",
                 "Break      : ",

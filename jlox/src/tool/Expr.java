@@ -1,8 +1,8 @@
 package tool;
 
-import lox.Token;
+import lox.*;
 
-import java.util.List;
+import java.util.*;
 
 public abstract class Expr {
   public interface Visitor<R> {
@@ -14,6 +14,7 @@ public abstract class Expr {
     public R visitLiteralExpr(Literal expr);
     public R visitLogicalExpr(Logical expr);
     public R visitSetExpr(Set expr);
+    public R visitSuperExpr(Super expr);
     public R visitThisExpr(This expr);
     public R visitUnaryExpr(Unary expr);
     public R visitConditionalExpr(Conditional expr);
@@ -134,6 +135,20 @@ public abstract class Expr {
     public final Expr object;
     public final Token name;
     public final Expr value;
+  }
+ public static class Super extends Expr {
+    public Super(Token keyword, Token method) {
+    this.keyword = keyword;
+    this.method = method;
+    }
+
+    @Override
+    public <R> R accept(Visitor<R> visitor) {
+      return visitor.visitSuperExpr(this);
+    }
+
+    public final Token keyword;
+    public final Token method;
   }
  public static class This extends Expr {
     public This(Token keyword) {

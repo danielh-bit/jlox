@@ -1,8 +1,8 @@
 package tool;
 
-import lox.Token;
+import lox.*;
 
-import java.util.List;
+import java.util.*;
 
 public abstract class Stmt {
   public interface Visitor<R> {
@@ -30,8 +30,9 @@ public abstract class Stmt {
     public final List<Stmt> statements;
   }
  public static class Class extends Stmt {
-    public Class(Token name, List<Stmt.Function> methods) {
+    public Class(Token name, Expr.Variable superclass, List<Stmt.Function> methods) {
     this.name = name;
+    this.superclass = superclass;
     this.methods = methods;
     }
 
@@ -41,6 +42,7 @@ public abstract class Stmt {
     }
 
     public final Token name;
+    public final Expr.Variable superclass;
     public final List<Stmt.Function> methods;
   }
  public static class Expression extends Stmt {

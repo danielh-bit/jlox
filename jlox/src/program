@@ -1,11 +1,19 @@
-class Math {
-    square(n) {
-        return n * n;
-    }
+class A {
+  method() {
+    print "A method";
+  }
 }
 
-print Math.asdf(3);
+class B < A {
+  method() {
+    print "B method";
+  }
 
-// make these error different.
-//var a = 3;
-//a.asdf();
+  test() {
+    super.method();
+  }
+}
+
+class C < B {}
+
+C().test();
